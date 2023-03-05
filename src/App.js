@@ -15,11 +15,35 @@ function App() {
         )
         .then(data =>{
           setWeatherData(data);
-          console.log(data);
         })
       }
     }
 
+    const date = new Date();
+
+    const serializeTime = ({
+      hours:date.getHours(),
+      minutes: date.getMinutes(),
+      ampm:'AM'
+    })
+    const doubleDigitsHours =clockTime=>({
+      ...clockTime,
+      hours: clockTime.hours < 10? '0'+clockTime.hours: clockTime.hours
+    })
+    const doubleDigitsMinutes =clockTime=>({
+      ...clockTime,
+      minutes: clockTime.minutes < 10? '0'+clockTime.minutes: clockTime.minutes
+    })
+    const expendAMPM =clockTime=>({
+      ...clockTime,
+      ampm: (clockTime.hours > 12 || clockTime.hours===12 )? 'PM': 'AM'
+    })
+    const format_display =format=>
+      format
+      .replace('hh',doubleDigitsHours(serializeTime).hours)
+      .replace('mm',doubleDigitsMinutes(serializeTime).minutes)
+      .replace('ap',expendAMPM(serializeTime).ampm)
+    
   return (
     //get base on your current location and show five city near your's
     <div className="w-screen h-screen bg-green-500 p-5">
@@ -32,7 +56,11 @@ function App() {
       onChange={e=>setCity(e.target.value)}
       onKeyDownCapture={getWeather}
       />
-      { typeof weatherData.main == 'undefined'?<div>Welcome to My Weather app</div>
+      { typeof weatherData.main == 'undefined'?
+      <div>
+        Welcome to My Weather app
+        
+      </div>
       :(<div className='flex justify-center'>
       <div className='text-white'>
         <div className=''>icons for sum</div>
@@ -40,7 +68,7 @@ function App() {
         <div className='pt-10'>
           <p className='text-slate-300'>Indonisa</p>
           <h1 className='font-bold text-2xl' style={{textTransform:'uppercase'}}>{weatherData.name}</h1>
-          <p className='font-sans pt-2'>Saturday, 06:47pm</p>
+          <p className='font-sans pt-2'>Saturday, {format_display("hh:mm ap")}</p>
           <p className='font-thin'>22 Feb 2016</p>
         </div>
       </div>
